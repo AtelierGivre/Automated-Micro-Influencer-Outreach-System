@@ -1,6 +1,6 @@
 # Automated Micro-Influencer Outreach System
 
-Built for the EDXSO AI Engineer Intern assignment. Full pipeline: discover
+Full pipeline: discover
 influencers → filter/classify → enrich profiles → generate personalized
 outreach copy → send (simulated) → track results, with dedup so nobody gets
 messaged twice.
