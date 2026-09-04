@@ -1,0 +1,12 @@
+# The pipeline runs fine with zero third-party dependencies in fallback
+# mode (it uses csv, sqlite3, smtplib, json, ssl - all standard library).
+#
+# anthropic/openai are only imported if the matching API key env var is
+# set (real LLM personalization path). Install whichever you plan to use:
+anthropic>=0.40.0
+openai>=1.40.0
+
+# Optional, for loading a local .env file (see .env.example) instead of
+# exporting env vars by hand. Not required - config.py falls back to real
+# env vars if this isn't installed.
+python-dotenv>=1.0.0

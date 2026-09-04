@@ -1,0 +1,108 @@
+{
+  "name": "Influencer Outreach Pipeline",
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [ { "field": "days", "daysInterval": 1 } ] } },
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "notes": "Runs discovery once a day. Swap for a webhook trigger if you want on-demand runs instead."
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5000/discover",
+        "method": "POST",
+        "jsonParameters": true
+      },
+      "name": "Run Discovery",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [220, 0],
+      "notes": "Calls a small Flask/FastAPI wrapper around discovery.py + filter_classify.py + enrich.py, returns the qualified+enriched list as JSON."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            { "value1": "={{$json[\"followers\"]}}", "operation": "largerEqual", "value2": 5000 },
+            { "value1": "={{$json[\"followers\"]}}", "operation": "smallerEqual", "value2": 100000 }
+          ]
+        }
+      },
+      "name": "Filter: Follower Range",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [440, 0],
+      "notes": "Mirrors filter_classify.py thresholds. Kept here too so non-engineers can tweak the number in the n8n UI without touching code."
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5000/personalize",
+        "method": "POST",
+        "jsonParameters": true
+      },
+      "name": "Generate Messages (LLM)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [660, -60],
+      "notes": "Wraps personalize.py - calls Claude/GPT with the influencer's niche + content theme, returns email_pitch + instagram_dm."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            { "value1": "={{$json[\"email\"]}}", "operation": "notEqual", "value2": "Not Found" }
+          ]
+        }
+      },
+      "name": "Has Valid Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [880, -60]
+    },
+    {
+      "parameters": {
+        "fromEmail": "partnerships@volturafit.com",
+        "toEmail": "={{$json[\"email\"]}}",
+        "subject": "Collab idea for {{$json[\"name\"]}} x Voltura Fit",
+        "text": "={{$json[\"email_pitch\"]}}"
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1100, -100],
+      "notes": "Gmail/SMTP node. In the Python version this is sending.py's _send_smtp()."
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "sheetId": "OUTREACH_TRACKER_SHEET_ID",
+        "range": "A:F"
+      },
+      "name": "Log to Tracker Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [1320, -60],
+      "notes": "Same role as sending.py writing to outreach_tracker.csv / outreach.db - one row per attempt, sent or skipped, with a reason."
+    },
+    {
+      "parameters": {
+        "content": "Instagram DMs: not auto-sent (Meta doesn't allow bulk automated DM outreach through any public API). This branch just logs the generated DM copy to the tracker for manual sending."
+      },
+      "name": "DM Copy -> Manual Queue",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [880, 120]
+    }
+  ],
+  "connections": {
+    "Daily Trigger": { "main": [[{ "node": "Run Discovery", "type": "main", "index": 0 }]] },
+    "Run Discovery": { "main": [[{ "node": "Filter: Follower Range", "type": "main", "index": 0 }]] },
+    "Filter: Follower Range": { "main": [[{ "node": "Generate Messages (LLM)", "type": "main", "index": 0 }]] },
+    "Generate Messages (LLM)": { "main": [[{ "node": "Has Valid Email?", "type": "main", "index": 0 }]] },
+    "Has Valid Email?": { "main": [[{ "node": "Send Email", "type": "main", "index": 0 }], [{ "node": "Log to Tracker Sheet", "type": "main", "index": 0 }]] },
+    "Send Email": { "main": [[{ "node": "Log to Tracker Sheet", "type": "main", "index": 0 }]] }
+  },
+  "_notes": "This is a reference workflow, not a running deployment - I don't have an n8n instance or hosted API wrapper set up in this environment. It maps 1:1 onto the Python pipeline (main.py) so it's clear how this would move into a no-code automation tool: discover -> filter -> personalize -> branch on email availability -> send -> log. Import into n8n and point the HTTP Request nodes at a real API wrapper around discovery.py/personalize.py to make it live."
+}
