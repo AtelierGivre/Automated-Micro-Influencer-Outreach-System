@@ -1,5 +1,7 @@
 # Automated Micro-Influencer Outreach System
 
+An end-to-end Python automation pipeline that discovers influencer profiles, filters and qualifies them, enriches their information, generates personalized outreach messages, and tracks outreach attempts while preventing duplicate messaging.
+
 Full pipeline: discover
 influencers → filter/classify → enrich profiles → generate personalized
 outreach copy → send (simulated) → track results, with dedup so nobody gets
