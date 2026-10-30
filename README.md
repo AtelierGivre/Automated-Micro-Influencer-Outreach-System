@@ -1,4 +1,4 @@
-# Automated Micro-Influencer Outreach System
+# Automated Micro-Influencer Outreach System — Mock Automation Prototype
 
 An end-to-end Python automation pipeline that discovers influencer profiles, filters and qualifies them, enriches their information, generates personalized outreach messages, and tracks outreach attempts while preventing duplicate messaging.
 
