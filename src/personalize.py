@@ -6,13 +6,17 @@ Two messages per qualified influencer:
 * Instagram DM, constrained to ``config.DM_WORD_RANGE``
 
 If ``ANTHROPIC_API_KEY`` or ``OPENAI_API_KEY`` is set, a real model writes the
-copy (Anthropic has priority, OpenAI is the fallback). Otherwise a randomized,
-deterministic-per-profile template generator is used. Both paths enforce the
-word limits and log the actual counts.
+copy (Anthropic has priority, OpenAI is the fallback). The provider SDK is the
+default path. Set ``PERSONALIZE_BACKEND=langchain`` after installing
+``requirements-langchain.txt`` to route the same prompts through LangChain chat
+models instead; ``auto`` uses LangChain when it is installed. Otherwise a
+randomized, deterministic-per-profile template generator is used. Every path
+enforces the word limits and logs the actual counts.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import random
 import re
@@ -209,12 +213,66 @@ def _call_openai(prompt: str, system: str) -> str:
     return (response.choices[0].message.content or "").strip()
 
 
+def _langchain_available() -> bool:
+    """True when the optional LangChain packages needed by a provider exist."""
+    if importlib.util.find_spec("langchain_core") is None:
+        return False
+    if config.ANTHROPIC_API_KEY:
+        return importlib.util.find_spec("langchain_anthropic") is not None
+    return importlib.util.find_spec("langchain_openai") is not None
+
+
+def _use_langchain() -> bool:
+    backend = getattr(config, "PERSONALIZE_BACKEND", "direct")
+    if backend in {"langchain", "auto"}:
+        return _langchain_available()
+    return False
+
+
+def _call_langchain(prompt: str, system: str) -> str:
+    """Same system/user prompts, routed through a LangChain chat model."""
+    from langchain_core.messages import HumanMessage, SystemMessage
+
+    if config.ANTHROPIC_API_KEY:
+        from langchain_anthropic import ChatAnthropic
+
+        model = ChatAnthropic(
+            model=config.ANTHROPIC_MODEL,
+            api_key=config.ANTHROPIC_API_KEY,
+            max_tokens=400,
+        )
+    elif config.OPENAI_API_KEY:
+        from langchain_openai import ChatOpenAI
+
+        model = ChatOpenAI(
+            model=config.OPENAI_MODEL,
+            api_key=config.OPENAI_API_KEY,
+            max_tokens=400,
+        )
+    else:
+        raise NotImplementedError("No LLM key configured - see config.py")
+
+    response = model.invoke(
+        [SystemMessage(content=system), HumanMessage(content=prompt)]
+    )
+    content = response.content
+    if isinstance(content, list):
+        # Some providers return content blocks instead of one string.
+        return "".join(
+            block.get("text", "") if isinstance(block, dict) else str(block)
+            for block in content
+        ).strip()
+    return str(content).strip()
+
+
 def _generate_llm_message(profile: dict, kind: str) -> str:
     low, high = config.EMAIL_WORD_RANGE if kind == "email" else config.DM_WORD_RANGE
     system = _system_prompt(kind, low, high)
     prompt = _user_prompt(profile, kind)
 
-    if config.ANTHROPIC_API_KEY:
+    if _use_langchain():
+        text = _retrying_call(lambda: _call_langchain(prompt, system))
+    elif config.ANTHROPIC_API_KEY:
         text = _retrying_call(lambda: _call_anthropic(prompt, system))
     elif config.OPENAI_API_KEY:
         text = _retrying_call(lambda: _call_openai(prompt, system))
@@ -266,7 +324,9 @@ def personalize_all(profiles: list[dict]) -> list[dict]:
 
 
 def llm_mode() -> str:
-    return "LLM" if (config.ANTHROPIC_API_KEY or config.OPENAI_API_KEY) else "template fallback"
+    if not (config.ANTHROPIC_API_KEY or config.OPENAI_API_KEY):
+        return "template fallback"
+    return "LLM via LangChain" if _use_langchain() else "LLM"
 
 
 # Kept for callers that want to check the configured word limits.
@@ -278,3 +338,4 @@ def _clear_env_cache() -> None:
     """Tests change env vars; config reads them at import time, so mirror that."""
     config.ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
     config.OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+    config.PERSONALIZE_BACKEND = os.environ.get("PERSONALIZE_BACKEND", "direct").strip().lower()

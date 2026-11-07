@@ -12,6 +12,10 @@ messaged twice.
 ```bash
 pip install -r requirements.txt   # optional - stdlib only unless you set an LLM key
 python main.py
+
+# Optional: route the same prompts through LangChain instead of the provider SDKs
+pip install -r requirements-langchain.txt
+PERSONALIZE_BACKEND=langchain python main.py
 ```
 
 No API keys required to see the full workflow run end to end. Output lands in `data/`:
@@ -44,13 +48,14 @@ video/screenshots weren't possible in this sandboxed environment) and
 Run the offline test suite (no API keys, no network):
 
 ```bash
-python -m pytest -q     # 15 tests
+python -m pytest -q     # 18 tests
 ```
 
 ## Technology stack
 
 - **Python 3**, mostly standard library (`csv`, `sqlite3`, `smtplib`, `json`, `ssl`) — no dependency wall to get the core pipeline running
 - **Anthropic API** (`anthropic` SDK) for LLM-based personalization
+- **LangChain** (optional) — the same prompts can be routed through LangChain chat models (`requirements-langchain.txt`); off by default
 - **SQLite** for structured, queryable storage alongside the CSV exports
 - **n8n** — reference workflow for the no-code automation angle
 
@@ -130,6 +135,15 @@ configurable via `config.ANTHROPIC_MODEL`) — primary provider. Falls back
 to OpenAI (`config.OPENAI_MODEL`, default `gpt-4o-mini`) automatically if
 only `OPENAI_API_KEY` is set. Same prompts either way — nothing
 provider-specific, so switching is a config change, not a rewrite.
+
+**Optional LangChain backend.** Install `requirements-langchain.txt` and set
+`PERSONALIZE_BACKEND=langchain` (or `auto`) to route the identical system/user
+prompts through `ChatAnthropic`/`ChatOpenAI` from LangChain. The default
+`direct` path still calls the provider SDKs and needs no extra dependency.
+This is an adapter around one step, not a rewrite: the pipeline, filtering,
+dedup and sending logic are unchanged. If the optional packages are absent the
+run stays on the direct path; if a selected LangChain call fails, that profile
+falls back to the template generator rather than crashing the batch.
 
 **Prompt design** (in `src/personalize.py`): separate system + user prompts
 for the email and the DM. The system prompt encodes the hard constraints —
@@ -217,6 +231,8 @@ logged the same way as the email, ready for manual sending.
 - The submitted messages came from template-fallback mode since no LLM key
   is configured here — the real LLM path exists and is tested, just not
   live for this submission.
+- The optional LangChain backend is unit-tested with mocked calls; no live
+  LangChain model call was made in this environment.
 - Audience demographics (age/gender/geography) are the fields most likely
   to be `"Not Available"` in real scraping too — most platforms don't
   expose this without the creator's own analytics access.
@@ -272,6 +288,7 @@ influencer_outreach/
 ├── config.py                    # all thresholds, brand info, API keys live here
 ├── main.py                       # runs the full pipeline
 ├── requirements.txt
+├── requirements-langchain.txt    # optional LangChain personalization backend
 ├── .env.example                  # template - copy to .env locally, never commit .env
 ├── .gitignore                    # keeps .env, __pycache__ out of the repo
 ├── automation_workflow.n8n.json  # reference n8n workflow (importable)
@@ -284,7 +301,7 @@ influencer_outreach/
 │   ├── personalize.py            # includes real Anthropic + OpenAI API integration
 │   ├── sending.py
 │   └── db.py                     # SQLite storage layer
-├── tests/test_pipeline.py        # 15 offline tests
+├── tests/test_pipeline.py        # 18 offline tests
 └── data/                          # generated on run
     ├── influencer_dataset.csv     # main deliverable - all 110, pass + fail
     ├── influencers_raw.csv

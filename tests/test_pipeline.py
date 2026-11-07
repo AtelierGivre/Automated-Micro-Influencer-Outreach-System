@@ -126,6 +126,50 @@ def test_llm_failure_falls_back_to_template(monkeypatch):
     assert out["email_word_count"] > 0
 
 
+def test_langchain_backend_is_used_when_selected(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setattr(config, "PERSONALIZE_BACKEND", "langchain")
+    monkeypatch.setattr(personalize, "_langchain_available", lambda: True)
+    monkeypatch.setattr(
+        personalize, "_call_langchain",
+        lambda prompt, system: "LangChain written message that mentions Fitness and a sponsored post clearly.",
+    )
+    out = personalize.personalize({"name": "Mia Fit", "handle": "mia", "platform": "TikTok",
+                                   "niche": "Fitness", "content_themes": "yoga"})
+    assert out["email_pitch"].startswith("LangChain written message")
+    assert config.EMAIL_WORD_RANGE[0] <= out["email_word_count"] <= config.EMAIL_WORD_RANGE[1]
+    assert personalize.llm_mode() == "LLM via LangChain"
+
+
+def test_langchain_selection_falls_back_to_direct_when_not_installed(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setattr(config, "PERSONALIZE_BACKEND", "langchain")
+    monkeypatch.setattr(personalize, "_langchain_available", lambda: False)
+    monkeypatch.setattr(
+        personalize, "_call_anthropic",
+        lambda prompt, system: "Direct SDK message that mentions Fitness and a sponsored post clearly.",
+    )
+    out = personalize.personalize({"name": "Mia Fit", "handle": "mia", "platform": "TikTok",
+                                   "niche": "Fitness", "content_themes": "yoga"})
+    assert out["email_pitch"].startswith("Direct SDK message")
+    assert personalize.llm_mode() == "LLM"
+
+
+def test_langchain_failure_falls_back_to_template(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setattr(config, "PERSONALIZE_BACKEND", "langchain")
+    monkeypatch.setattr(personalize, "_langchain_available", lambda: True)
+    monkeypatch.setattr(
+        personalize, "_call_langchain",
+        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("langchain 503")),
+    )
+    monkeypatch.setattr(personalize, "_retrying_call", lambda call, attempts=3: call())
+    out = personalize.personalize({"name": "Mia Fit", "handle": "mia", "platform": "TikTok",
+                                   "niche": "Fitness", "content_themes": "yoga"})
+    assert "generation failed" not in out["email_pitch"]
+    assert out["email_word_count"] > 0
+
+
 # --------------------------------------------------------------------------- sending
 @pytest.fixture()
 def isolated_paths(tmp_path, monkeypatch):

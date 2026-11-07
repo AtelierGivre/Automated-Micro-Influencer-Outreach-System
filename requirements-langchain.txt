@@ -1,0 +1,12 @@
+# Optional LangChain personalization backend.
+#
+# The pipeline is standard-library-only by default. Install this only when you
+# want the same prompts routed through LangChain chat models:
+#
+#   pip install -r requirements-langchain.txt
+#   PERSONALIZE_BACKEND=langchain python main.py
+#
+# The provider SDKs (anthropic / openai) remain the direct default path.
+langchain-core>=1.0,<2
+langchain-openai>=1.0,<2
+langchain-anthropic>=1.0,<2

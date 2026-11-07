@@ -136,7 +136,7 @@ priority, and retry-then-template-fallback:
 
 ```
 python -m pytest -q
-15 passed in 0.37s
+18 passed in 0.37s
 ```
 
 Relevant tests in `tests/test_pipeline.py`:
@@ -144,6 +144,12 @@ Relevant tests in `tests/test_pipeline.py`:
   reaches the generated message.
 - `test_llm_failure_falls_back_to_template` - a failing model does not crash
   the batch and does not leak `[generation failed]` into the copy.
+- `test_langchain_backend_is_used_when_selected` - the optional LangChain
+  adapter is used when selected.
+- `test_langchain_selection_falls_back_to_direct_when_not_installed` - the
+  default SDK path still works without the optional packages.
+- `test_langchain_failure_falls_back_to_template` - a failing LangChain call
+  is isolated per profile.
 - `test_template_messages_respect_word_limits` - 30 generated messages all
   land inside the configured 60-90 / 15-30 word ranges.
 - `test_send_batch_skips_missing_email_and_dedups` - second run sends 0.

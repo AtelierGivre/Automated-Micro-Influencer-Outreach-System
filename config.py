@@ -56,6 +56,10 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+# direct = call the provider SDK directly (default, no extra dependency)
+# langchain = route the same prompts through LangChain chat models
+# auto = LangChain when installed, otherwise direct
+PERSONALIZE_BACKEND = os.environ.get("PERSONALIZE_BACKEND", "direct").strip().lower()
 
 EMAIL_WORD_RANGE = (60, 90)
 DM_WORD_RANGE = (15, 30)

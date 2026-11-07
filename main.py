@@ -73,8 +73,7 @@ def main():
 
     # 4. Personalize (per-influencer error handling lives inside personalize_all)
     personalized = personalize.personalize_all(enriched)
-    llm_mode = "LLM" if (config.ANTHROPIC_API_KEY or config.OPENAI_API_KEY) else "template fallback"
-    print(f"[4/7] Personalization ({llm_mode} mode): generated email + DM for {len(personalized)} profiles")
+    print(f"[4/7] Personalization ({personalize.llm_mode()} mode): generated email + DM for {len(personalized)} profiles")
 
     fieldnames = [
         "name", "handle", "platform", "followers", "engagement_rate", "niche",
@@ -83,12 +82,12 @@ def main():
         "instagram_dm", "email_word_count", "dm_word_count",
     ]
     save_csv(personalized, config.QUALIFIED_PATH, fieldnames)
-    print(f"       -> data/influencers_qualified.csv")
+    print("       -> data/influencers_qualified.csv")
 
     # structured storage, alongside the CSV
     try:
         db.upsert_influencers(personalized)
-        print(f"       -> data/outreach.db (influencers table)")
+        print("       -> data/outreach.db (influencers table)")
     except Exception as e:
         print(f"       [db warning] couldn't write to SQLite: {e}")
 
@@ -107,7 +106,7 @@ def main():
 
     try:
         db.log_outreach(tracker_rows)
-        print(f"       -> data/outreach.db (outreach_log table)")
+        print("       -> data/outreach.db (outreach_log table)")
     except Exception as e:
         print(f"       [db warning] couldn't write to SQLite: {e}")
 
