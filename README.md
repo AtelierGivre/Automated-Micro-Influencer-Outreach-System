@@ -71,12 +71,12 @@ python -m pytest -q     # 18 offline tests (+1 optional module skipped)
 
 I don't have API credentials for Instagram Graph API, YouTube Data API, or
 TikTok's Research API in this environment, and didn't want to submit
-scraped data that could be stale, against a platform's ToS, or — worse —
+scraped data that could be stale, against a platform's ToS, or worse
 just invented numbers presented as real (the assignment explicitly says not
 to fabricate influencer data or guess emails, and I take that seriously).
 
 So `src/discovery.py` runs in a documented mock mode: it generates 110
-influencer profiles in the exact shape real discovery would return —
+influencer profiles in the exact shape real discovery would return:
 mixed niches, realistic follower/engagement distributions, some profiles
 deliberately outside the target range so filtering has real work to do.
 Every field downstream (filtering, enrichment, personalization, sending,
@@ -136,15 +136,6 @@ to OpenAI (`config.OPENAI_MODEL`, default `gpt-4o-mini`) automatically if
 only `OPENAI_API_KEY` is set. Same prompts either way — nothing
 provider-specific, so switching is a config change, not a rewrite.
 
-**Optional LangChain backend.** Install `requirements-langchain.txt` and set
-`PERSONALIZE_BACKEND=langchain` (or `auto`) to route the identical system/user
-prompts through `ChatAnthropic`/`ChatOpenAI` from LangChain. The default
-`direct` path still calls the provider SDKs and needs no extra dependency.
-This is an adapter around one step, not a rewrite: the pipeline, filtering,
-dedup and sending logic are unchanged. If the optional packages are absent the
-run stays on the direct path; if a selected LangChain call fails, that profile
-falls back to the template generator rather than crashing the batch.
-
 The adapter is covered by unit tests and by `tests/test_langchain_integration.py`,
 which exercises the real packages and skips when they are not installed.
 
@@ -167,8 +158,6 @@ The shipped dataset uses the template-fallback generator, which pulls each
 influencer's real niche, content theme, platform, and a randomly chosen collab
 angle into a randomized template bank, so no two messages are identical.
 
-**Secrets:** an API key belongs in a local `.env`, which is listed in
-`.gitignore`, never in the repository.
 
 ## Personalization logic
 
@@ -197,25 +186,7 @@ SMTP credentials to send for real. For each qualified influencer it:
    `outreach_tracker.csv` and `data/outreach.db`
 
 **Instagram DMs are not auto-sent.** Meta doesn't permit automated bulk DM
-sending for outreach use cases through any public API, and the assignment
-is explicit about not routing around that. The DM copy is generated and
-logged the same way as the email, ready for manual sending.
-
-## Error handling
-
-- A malformed/missing-field record during filtering doesn't crash the run
-  — it's caught, marked `status="Error"`, logged with the reason, and the
-  batch continues
-- `personalize_all()` runs per-influencer in a try/except — one bad record
-  or failed LLM call produces a `[generation failed: ...]` placeholder for
-  just that influencer, not a crashed batch
-- LLM calls retry once on failure before falling back to template mode
-- SMTP failures are caught per-recipient and logged as `Failed` with the
-  actual exception message
-- A bad row on SQLite insert is skipped with a warning, not a rolled-back
-  batch
-- Zero qualified influencers → pipeline stops cleanly with a message
-  instead of crashing on an empty list downstream
+sending for outreach use cases through any public API.
 
 ## Limitations
 
@@ -253,9 +224,6 @@ row count stayed flat.
 A reference n8n workflow mapping this pipeline onto a no-code automation
 tool: scheduled trigger → discovery → follower-range filter → LLM
 personalization → branch on email availability → send → log to tracker.
-Importable into a real n8n instance; not run live here (no n8n instance
-available in this environment) — each node's notes explain which Python
-module it corresponds to.
 
 ## Sample output
 
