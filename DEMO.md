@@ -136,8 +136,15 @@ priority, and retry-then-template-fallback:
 
 ```
 python -m pytest -q
-18 passed in 0.37s
+18 passed, 1 skipped in 0.34s
 ```
+
+The skipped module is `tests/test_langchain_integration.py`, which needs the
+optional packages. With them installed in an isolated venv
+(`langchain-core 1.7.6`, `langchain-anthropic 1.7.10`, `langchain-openai 1.7.4`)
+the same suite reports `23 passed`: real chat-model construction, real
+`SystemMessage`/`HumanMessage` objects, content-block joining and the direct
+fallback are all exercised. No live model request is made.
 
 Relevant tests in `tests/test_pipeline.py`:
 - `test_llm_path_is_used_when_a_key_is_configured` - Anthropic response text
@@ -150,6 +157,8 @@ Relevant tests in `tests/test_pipeline.py`:
   default SDK path still works without the optional packages.
 - `test_langchain_failure_falls_back_to_template` - a failing LangChain call
   is isolated per profile.
+- `tests/test_langchain_integration.py` (optional) - real package imports,
+  real chat-model construction, real message types and content-block joining.
 - `test_template_messages_respect_word_limits` - 30 generated messages all
   land inside the configured 60-90 / 15-30 word ranges.
 - `test_send_batch_skips_missing_email_and_dedups` - second run sends 0.

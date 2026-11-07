@@ -48,7 +48,7 @@ video/screenshots weren't possible in this sandboxed environment) and
 Run the offline test suite (no API keys, no network):
 
 ```bash
-python -m pytest -q     # 18 tests
+python -m pytest -q     # 18 offline tests (+1 optional module skipped)
 ```
 
 ## Technology stack
@@ -145,6 +145,13 @@ dedup and sending logic are unchanged. If the optional packages are absent the
 run stays on the direct path; if a selected LangChain call fails, that profile
 falls back to the template generator rather than crashing the batch.
 
+The adapter was validated against real packages in an isolated venv
+(`langchain-core 1.7.6`, `langchain-anthropic 1.7.10`, `langchain-openai 1.7.4`):
+real chat-model construction, real `SystemMessage`/`HumanMessage` objects,
+content-block joining, word-limit enforcement and the direct-path fallback all
+pass. `tests/test_langchain_integration.py` reproduces that check and skips
+cleanly when the optional packages are absent (no network or API key needed).
+
 **Prompt design** (in `src/personalize.py`): separate system + user prompts
 for the email and the DM. The system prompt encodes the hard constraints —
 word count range, tone, "no generic filler," must reference a real
@@ -231,8 +238,10 @@ logged the same way as the email, ready for manual sending.
 - The submitted messages came from template-fallback mode since no LLM key
   is configured here — the real LLM path exists and is tested, just not
   live for this submission.
-- The optional LangChain backend is unit-tested with mocked calls; no live
-  LangChain model call was made in this environment.
+- The optional LangChain backend is unit-tested with mocked calls and
+  integration-tested against the real packages in an isolated venv. No live
+  model request was made (no API key in this environment), so what is verified
+  is the adapter's imports, message construction and routing, not model output.
 - Audience demographics (age/gender/geography) are the fields most likely
   to be `"Not Available"` in real scraping too — most platforms don't
   expose this without the creator's own analytics access.
@@ -302,6 +311,7 @@ influencer_outreach/
 │   ├── sending.py
 │   └── db.py                     # SQLite storage layer
 ├── tests/test_pipeline.py        # 18 offline tests
+├── tests/test_langchain_integration.py  # optional, skipped without the packages
 └── data/                          # generated on run
     ├── influencer_dataset.csv     # main deliverable - all 110, pass + fail
     ├── influencers_raw.csv
