@@ -84,10 +84,9 @@ Data in data/*.csv, data/outreach.db, and data/outreach_log.json
 | Rohan Fit | TikTok | 95,597 | 4.39% | rohanfit106@gmail.com |
 
 9 of the 38 have no public email on file, correctly marked `Not Found`
-rather than guessed - and correctly `Skipped` (not sent) in the tracker,
-which is exactly the behavior the assignment asks for.
+rather than guessed - and correctly `Skipped` (not sent) in the tracker.
 
-## Full dataset (the actual assignment deliverable)
+## Full dataset 
 
 `data/influencer_dataset.csv` has all 110 discovered profiles - the 38
 above that qualified, plus all 72 that didn't, each with a `status` and a
@@ -100,7 +99,7 @@ above that qualified, plus all 72 that didn't, each with a `status` and a
 | Meera Creates | YouTube | 219,442 | Beauty | Rejected | niche is 'Beauty', not 'Fitness'; followers (219,442) outside 5,000-100,000 range; engagement rate 1.29% below 2.0% |
 | Priya Creates | Instagram | 3,584 | Fintech | Rejected | niche is 'Fintech', not 'Fitness'; followers (3,584) outside 5,000-100,000 range |
 
-This is the file that matches the assignment's recommended dataset format
+This is the file that matches this project's recommended dataset format
 (Name / Platform / Followers / Engagement / Niche / Email / Profile URL /
 Content Theme / Status) with 110 rows, well over the 50 minimum, and a
 34.5% qualify rate that shows the filter doing real, meaningful work
@@ -130,17 +129,10 @@ outreach_log table:  76 rows after two runs (grows by one row per attempt
 
 ## LLM integration check
 
-Both provider paths are covered by unit tests, not assumed to work. The suite
-covers the Anthropic path, the OpenAI path, provider priority, and
-retry-then-template-fallback:
-
 ```
 python -m pytest -q
 18 passed, 1 skipped in 0.34s
 ```
-
-The optional integration module adds checks against the real LangChain
-packages when they are installed.
 
 Relevant tests in `tests/test_pipeline.py`:
 - `test_llm_path_is_used_when_a_key_is_configured` - Anthropic response text
@@ -159,7 +151,3 @@ Relevant tests in `tests/test_pipeline.py`:
   land inside the configured 60-90 / 15-30 word ranges.
 - `test_send_batch_skips_missing_email_and_dedups` - second run sends 0.
 - `test_smtp_failure_is_logged_per_recipient` - SMTP errors are isolated.
-
-Every message in this submission's dataset came from the template-fallback
-generator. Export a real key and `[4/7]` in the output above will read
-`(LLM mode)` instead of `(template fallback mode)`; no code changes needed.
