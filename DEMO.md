@@ -1,4 +1,4 @@
-# Demo
+## Demo
 
 A real captured terminal transcript from an actual run (`python main.py`),
 output unedited. The run is reproducible: `config.DISCOVERY_SEED` is pinned,
