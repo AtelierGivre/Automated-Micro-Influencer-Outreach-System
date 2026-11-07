@@ -1,8 +1,8 @@
 # Demo
 
-No video/screenshots since this was built and run in a sandboxed
-environment, so this is a real captured terminal transcript from an actual
-run instead - `python main.py`, output unedited.
+A real captured terminal transcript from an actual run (`python main.py`),
+output unedited. The run is reproducible: `config.DISCOVERY_SEED` is pinned,
+and the template fallback is deterministic per profile.
 
 ## Full run output
 
@@ -21,17 +21,17 @@ Influencer outreach pipeline - target niche: Fitness
 
 [5/7] Sample generated messages:
 
-  Nikhil Fit (Instagram, 96924 followers, 4.75% ER)
-  Email (69 words): Hi Nikhil, been going through your mobility & stretching content on Instagram and really liked how you break things down. At Voltura Fit, we're putting together a small group of Fitness creators for our upcoming launch, and your audience feels like the right match. If you're open to it, we'd like to set up a UGC content creation - no pressure either way, just wanted to reach out directly.
-  DM (23 words): Hi Nikhil! Loved your mobility & stretching content - your Fitness audience would be a great fit for a Voltura Fit collab. Interested?
+  Jordan Fit (YouTube, 74820 followers, 4.04% ER)
+  Email (75 words): Hi Jordan, loved your recent strength training content - your Fitness audience is exactly who we're trying to reach. I'm reaching out from Voltura Fit - a DTC fitness apparel and supplement brand launching a new activewear line - because we're building out a creator program and think there's a natural fit here. We'd love to explore a barter collaboration (free product in exchange for content) together if that's something you're taking on right now.
+  DM (26 words): Hi Jordan - big fan of your strength training content - we're looking for Fitness creators for a Voltura Fit campaign and you came to mind.
 
-  Kabir Fit (YouTube, 55432 followers, 5.03% ER)
-  Email (66 words): Hi Kabir, loved your recent mobility & stretching content - your Fitness audience is exactly who we're trying to reach. At Voltura Fit, we're building out a creator program - a DTC fitness apparel and supplement brand launching a new activewear line - and think there's a natural fit here. We'd love to explore a sponsored post together if that's something you're taking on right now.
-  DM (26 words): Hi Kabir - big fan of your mobility & stretching content! Think you'd be a great match for a Voltura Fit partnership. Worth a quick chat?
+  Pooja Fit (Instagram, 85013 followers, 4.01% ER)
+  Email (77 words): Hi Pooja, loved your recent nutrition & meal prep content - your Fitness audience is exactly who we're trying to reach. I'm reaching out from Voltura Fit - a DTC fitness apparel and supplement brand launching a new activewear line - because we're building out a creator program and think there's a natural fit here. If you're open to it, we'd like to set up a sponsored post - happy to share more details on your side.
+  DM (21 words): Hi Pooja! Loved your nutrition & meal prep content - think you'd be a great match for a Voltura Fit partnership.
 
-  Aarav Fit (Instagram, 41500 followers, 5.98% ER)
-  Email (68 words): Hi Aarav, loved your recent strength training content - your Fitness audience is exactly who we're trying to reach. At Voltura Fit, we're building out a creator program - a DTC fitness apparel and supplement brand launching a new activewear line - and think there's a natural fit here. Would you be open to a sponsored post - happy to share more details and rates on your side.
-  DM (22 words): Hi Aarav! Loved your strength training content - your Fitness audience would be a great fit for a Voltura Fit collab. Interested?
+  Ananya Fit (TikTok, 60575 followers, 3.68% ER)
+  Email (75 words): Hi Ananya, your mobility & stretching posts on TikTok stood out to me, especially how clearly you explain things. At Voltura Fit, we're a DTC fitness apparel and supplement brand launching a new activewear line, and we're putting together a small group of Fitness creators for our upcoming launch. We'd love to explore a sponsored post together if that's something you're taking on right now. Your 60,575 followers and 3.68% engagement are a strong signal.
+  DM (25 words): Hey Ananya, your mobility & stretching posts are great - we're looking for Fitness creators for a Voltura Fit campaign and you came to mind.
 
 [6/7] Sending: 29 sent (dry-run=True), 9 skipped -> data/outreach_tracker.csv
        -> data/outreach.db (outreach_log table)
@@ -44,44 +44,44 @@ Data in data/*.csv, data/outreach.db, and data/outreach_log.json
 
 | Name | Platform | Followers | Engagement | Email |
 |---|---|---|---|---|
-| Nikhil Fit | Instagram | 96,924 | 4.75% | nikhilfit72@gmail.com |
-| Kabir Fit | YouTube | 55,432 | 5.03% | kabirenergy88@creatoremail.com |
-| Aarav Fit | Instagram | 41,500 | 5.98% | **Not Found** |
-| Rohan Fit | YouTube | 66,213 | 6.06% | **Not Found** |
-| Ishita Fit | Instagram | 41,509 | 5.46% | ishitalife58@creatoremail.com |
-| Pooja Fit | TikTok | 71,562 | 4.01% | **Not Found** |
-| Mia Fit | TikTok | 86,183 | 3.77% | miadaily32@outlook.com |
-| Meera Fit | YouTube | 14,508 | 4.78% | meeradiaries83@gmail.com |
-| Arjun Fit | YouTube | 62,433 | 6.04% | arjunmoves32@creatoremail.com |
-| Ethan Fit | Instagram | 41,265 | 4.42% | ethanform7@gmail.com |
-| Ethan Fit | YouTube | 34,831 | 4.98% | ethancoach45@outlook.com |
-| Tara Fit | TikTok | 8,617 | 5.14% | taragrind87@gmail.com |
-| Jordan Fit | YouTube | 27,241 | 6.19% | jordanlifts66@gmail.com |
-| Ishita Fit | Instagram | 67,277 | 5.41% | ishitagetsstrong4@creatoremail.com |
-| Vivaan Fit | YouTube | 75,798 | 3.94% | **Not Found** |
-| Jordan Fit | TikTok | 66,261 | 6.19% | jordandiaries52@outlook.com |
-| Priya Fit | Instagram | 92,747 | 3.74% | priyadaily20@outlook.com |
-| Arjun Fit | TikTok | 28,086 | 6.37% | arjundiaries59@outlook.com |
-| Sam Fit | TikTok | 33,361 | 6.29% | samlife98@gmail.com |
-| Kabir Fit | TikTok | 40,954 | 4.43% | **Not Found** |
-| Dev Fit | TikTok | 30,928 | 5.55% | devwellness81@gmail.com |
-| Jordan Fit | Instagram | 9,852 | 5.15% | jordanenergy84@outlook.com |
-| Tara Fit | TikTok | 27,280 | 4.98% | taragrind73@outlook.com |
-| Mia Fit | TikTok | 13,285 | 6.37% | mialife42@gmail.com |
-| Diya Fit | TikTok | 77,641 | 4.22% | **Not Found** |
-| Meera Fit | YouTube | 19,408 | 6.33% | **Not Found** |
-| Ananya Fit | TikTok | 19,896 | 6.53% | ananyafit17@outlook.com |
-| Sam Fit | Instagram | 81,869 | 6.03% | samjourney48@outlook.com |
-| Kabir Fit | TikTok | 14,120 | 5.12% | kabirform19@creatoremail.com |
-| Diya Fit | YouTube | 79,395 | 5.17% | diyagetsstrong48@creatoremail.com |
-| Karan Fit | YouTube | 33,255 | 6.33% | **Not Found** |
-| Riya Fit | Instagram | 32,686 | 6.37% | riyadaily8@gmail.com |
-| Riya Fit | Instagram | 92,562 | 5.47% | **Not Found** |
-| Rohan Fit | TikTok | 15,308 | 5.73% | rohanlifts56@outlook.com |
-| Sana Fit | TikTok | 41,002 | 5.8% | sanacoach57@outlook.com |
-| Vivaan Fit | Instagram | 71,462 | 4.77% | vivaanmoves83@creatoremail.com |
-| Sameer Fit | YouTube | 91,057 | 5.89% | sameerdiaries50@gmail.com |
-| Alex Fit | YouTube | 97,908 | 5.71% | alexjourney85@gmail.com |
+| Jordan Fit | YouTube | 74,820 | 4.04% | jordanfit117@creatoremail.com |
+| Pooja Fit | Instagram | 85,013 | 4.01% | poojafit388@gmail.com |
+| Ananya Fit | TikTok | 60,575 | 3.68% | ananyafit8@outlook.com |
+| Vivaan Fit | Instagram | 30,289 | 5.87% | **Not Found** |
+| Nikhil Fit | TikTok | 17,725 | 3.14% | **Not Found** |
+| Sana Fit | YouTube | 73,631 | 5.57% | sanafit1288@outlook.com |
+| Sam Fit | Instagram | 25,280 | 5.21% | samfit154@outlook.com |
+| Sameer Fit | Instagram | 71,381 | 6.34% | sameerfit1658@creatoremail.com |
+| Priya Fit | TikTok | 24,105 | 5.82% | priyafit1732@gmail.com |
+| Ananya Fit | TikTok | 51,924 | 3.57% | ananyafit224@creatoremail.com |
+| Kabir Fit | TikTok | 70,966 | 3.66% | kabirfit2545@gmail.com |
+| Mia Fit | TikTok | 83,209 | 3.6% | miafit27@outlook.com |
+| Sameer Fit | TikTok | 65,724 | 2.95% | sameerfit294@creatoremail.com |
+| Pooja Fit | TikTok | 36,999 | 6.49% | **Not Found** |
+| Tara Fit | YouTube | 30,950 | 4.88% | tarafit36@gmail.com |
+| Sameer Fit | Instagram | 85,467 | 4.04% | sameerfit4517@gmail.com |
+| Ananya Fit | YouTube | 77,577 | 5.92% | ananyafit5132@gmail.com |
+| Ishita Fit | YouTube | 65,473 | 5.7% | ishitafit564@outlook.com |
+| Pooja Fit | TikTok | 88,251 | 3.78% | **Not Found** |
+| Sana Fit | Instagram | 84,411 | 5.89% | sanafit6188@outlook.com |
+| Dev Fit | Instagram | 36,778 | 4.33% | devfit6358@gmail.com |
+| Sam Fit | TikTok | 36,318 | 4.74% | samfit6632@gmail.com |
+| Arjun Fit | Instagram | 16,024 | 2.65% | **Not Found** |
+| Karan Fit | TikTok | 84,086 | 3.05% | **Not Found** |
+| Mia Fit | YouTube | 72,350 | 3.99% | miafit7532@creatoremail.com |
+| Kabir Fit | YouTube | 91,664 | 3.51% | kabirfit7817@outlook.com |
+| Meera Fit | Instagram | 51,026 | 2.37% | meerafit804@outlook.com |
+| Aarav Fit | Instagram | 50,086 | 6.57% | **Not Found** |
+| Dev Fit | Instagram | 16,281 | 6.48% | devfit8317@gmail.com |
+| Rohan Fit | TikTok | 52,914 | 4.76% | rohanfit8488@gmail.com |
+| Rohan Fit | Instagram | 56,204 | 6.22% | rohanfit8572@outlook.com |
+| Alex Fit | Instagram | 32,684 | 2.85% | alexfit8645@creatoremail.com |
+| Pooja Fit | TikTok | 62,210 | 6.37% | poojafit8772@outlook.com |
+| Vivaan Fit | TikTok | 5,650 | 3.46% | **Not Found** |
+| Nikhil Fit | YouTube | 9,443 | 5.74% | nikhilfit9658@creatoremail.com |
+| Sameer Fit | Instagram | 80,305 | 2.42% | **Not Found** |
+| Dev Fit | Instagram | 50,258 | 4.34% | devfit10045@gmail.com |
+| Rohan Fit | TikTok | 95,597 | 4.39% | rohanfit106@gmail.com |
 
 9 of the 38 have no public email on file, correctly marked `Not Found`
 rather than guessed - and correctly `Skipped` (not sent) in the tracker,
@@ -95,9 +95,10 @@ above that qualified, plus all 72 that didn't, each with a `status` and a
 
 | Name | Platform | Followers | Niche | Status | Reason |
 |---|---|---|---|---|---|
-| Priya Creates | Instagram | 18,434 | Fintech | Rejected | niche is 'Fintech', not 'Fitness' |
-| Meera Fit | YouTube | 3,612 | Fitness | Rejected | followers (3,612) outside 5,000-100,000 range |
-| Riya Creates | YouTube | 86,070 | Technology | Rejected | niche is 'Technology', not 'Fitness' |
+| Diya Fit | YouTube | 113,833 | Fitness | Rejected | followers (113,833) outside 5,000-100,000 range; engagement rate 1.60% below 2.0% |
+| Sameer Fit | TikTok | 139,842 | Fitness | Rejected | followers (139,842) outside 5,000-100,000 range |
+| Meera Creates | YouTube | 219,442 | Beauty | Rejected | niche is 'Beauty', not 'Fitness'; followers (219,442) outside 5,000-100,000 range; engagement rate 1.29% below 2.0% |
+| Priya Creates | Instagram | 3,584 | Fintech | Rejected | niche is 'Fintech', not 'Fitness'; followers (3,584) outside 5,000-100,000 range |
 
 This is the file that matches the assignment's recommended dataset format
 (Name / Platform / Followers / Engagement / Niche / Email / Profile URL /
@@ -120,33 +121,33 @@ thing to show, not just claim.
 ## Structured storage check
 
 ```
->>> sqlite3.connect('data/outreach.db')
+sqlite3.connect('data/outreach.db')
 influencers table:   38 rows (stays flat across reruns - upsert on
                       (handle, platform), not a duplicating insert)
-outreach_log table:  grows by one row per attempt per run (it's a log,
-                      not a dedup'd table - each send/skip attempt is a
-                      distinct event worth keeping)
+outreach_log table:  76 rows after two runs (grows by one row per attempt
+                      per run - it's a log, not a dedup'd table)
 ```
 
 ## LLM integration check (mocked, since no API key is set in this environment)
 
-Both provider paths in `personalize.py` were unit-tested against mocked API
-responses, not just assumed to work:
+Both provider paths are unit-tested against mocked responses, not assumed
+to work. The suite covers the Anthropic path, the OpenAI path, provider
+priority, and retry-then-template-fallback:
 
 ```
-OK - no key raises NotImplementedError: No LLM key configured - see config.py
-OK - anthropic path: anthropic response text here
-   model used: claude-sonnet-4-6
-OK - openai path: openai response text here
-   model used: gpt-4o-mini
-OK - both keys set, anthropic used: True openai used: False
-OK - retries then raises: LLM generation failed after 3 attempts: 503 overloaded
+python -m pytest -q
+15 passed in 0.37s
 ```
 
-That covers: no key configured, Anthropic-only, OpenAI-only, both-keys
-(confirms Anthropic gets priority), and the retry-then-raise failure path
-that lets `personalize.py` fall back to template mode cleanly instead of
-crashing the batch.
+Relevant tests in `tests/test_pipeline.py`:
+- `test_llm_path_is_used_when_a_key_is_configured` - Anthropic response text
+  reaches the generated message.
+- `test_llm_failure_falls_back_to_template` - a failing model does not crash
+  the batch and does not leak `[generation failed]` into the copy.
+- `test_template_messages_respect_word_limits` - 30 generated messages all
+  land inside the configured 60-90 / 15-30 word ranges.
+- `test_send_batch_skips_missing_email_and_dedups` - second run sends 0.
+- `test_smtp_failure_is_logged_per_recipient` - SMTP errors are isolated.
 
 **This part is still simulated, not a live call** - no `ANTHROPIC_API_KEY`
 or `OPENAI_API_KEY` was available in the environment this was built and run

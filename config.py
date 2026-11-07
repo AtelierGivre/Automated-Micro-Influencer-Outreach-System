@@ -34,6 +34,8 @@ COLLAB_ANGLES = [
 # fully real and testable. See README "Limitations" for how to swap this
 # out for real Instagram Graph API / YouTube Data API calls.
 MOCK_DISCOVERY = True
+# Reproducible demo runs. Change this to get a different (still realistic) dataset.
+DISCOVERY_SEED = 76
 NUM_DISCOVERED = 110  # oversample since not every discovered profile matches
 # the target niche/follower/engagement range - 110 discovered, with
 # discovery weighted toward the target niche (see discovery._niche_weights),
@@ -73,3 +75,4 @@ QUALIFIED_PATH = os.path.join(DATA_DIR, "influencers_qualified.csv")
 FULL_DATASET_PATH = os.path.join(DATA_DIR, "influencer_dataset.csv")
 TRACKER_PATH = os.path.join(DATA_DIR, "outreach_tracker.csv")
 LOG_PATH = os.path.join(DATA_DIR, "outreach_log.json")
+DB_PATH = os.path.join(DATA_DIR, "outreach.db")

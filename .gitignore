@@ -7,6 +7,10 @@ __pycache__/
 *.pyo
 .venv/
 venv/
+.pytest_cache/
+
+# Generated demo output (recreate with: python main.py)
+data/
 
 # OS noise
 .DS_Store

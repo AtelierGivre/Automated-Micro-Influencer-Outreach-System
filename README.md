@@ -41,6 +41,12 @@ See `DEMO.md` for a full captured run (a real terminal transcript, since
 video/screenshots weren't possible in this sandboxed environment) and
 `automation_workflow.n8n.json` for the no-code automation version.
 
+Run the offline test suite (no API keys, no network):
+
+```bash
+python -m pytest -q     # 15 tests
+```
+
 ## Technology stack
 
 - **Python 3**, mostly standard library (`csv`, `sqlite3`, `smtplib`, `json`, `ssl`) — no dependency wall to get the core pipeline running
@@ -250,15 +256,14 @@ module it corresponds to.
 
 See `data/influencer_dataset.csv` for the full 110-row set (pass + fail,
 with reasons) or `data/influencers_qualified.csv` for just the 38 qualified,
-enriched, and messaged profiles. Example:
+enriched, and messaged profiles. Example from the current seeded run:
 
-> **Kabir Fit** — TikTok, 68,565 followers, 5.44% engagement
-> **Email:** "Hi Kabir, been going through your running/cardio content on
-> TikTok and really liked how you break things down. At Voltura Fit, we're
-> building out a creator program... Would you be open to a barter
-> collaboration..."
-> **DM:** "Hi Kabir! Loved your running/cardio content - your Fitness
-> audience would be a great fit for a Voltura Fit collab. Interested?"
+> **Jordan Fit** — YouTube, 74,820 followers, 4.04% engagement
+> **Email:** "Hi Jordan, loved your recent strength training content - your
+> Fitness audience is exactly who we're trying to reach. I'm reaching out
+> from Voltura Fit... We'd love to explore a barter collaboration..."
+> **DM:** "Hi Jordan - big fan of your strength training content - we're
+> looking for Fitness creators for a Voltura Fit campaign and you came to mind."
 
 ## Project structure
 
@@ -279,6 +284,7 @@ influencer_outreach/
 │   ├── personalize.py            # includes real Anthropic + OpenAI API integration
 │   ├── sending.py
 │   └── db.py                     # SQLite storage layer
+├── tests/test_pipeline.py        # 15 offline tests
 └── data/                          # generated on run
     ├── influencer_dataset.csv     # main deliverable - all 110, pass + fail
     ├── influencers_raw.csv
