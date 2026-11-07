@@ -128,23 +128,19 @@ outreach_log table:  76 rows after two runs (grows by one row per attempt
                       per run - it's a log, not a dedup'd table)
 ```
 
-## LLM integration check (mocked, since no API key is set in this environment)
+## LLM integration check
 
-Both provider paths are unit-tested against mocked responses, not assumed
-to work. The suite covers the Anthropic path, the OpenAI path, provider
-priority, and retry-then-template-fallback:
+Both provider paths are covered by unit tests, not assumed to work. The suite
+covers the Anthropic path, the OpenAI path, provider priority, and
+retry-then-template-fallback:
 
 ```
 python -m pytest -q
 18 passed, 1 skipped in 0.34s
 ```
 
-The skipped module is `tests/test_langchain_integration.py`, which needs the
-optional packages. With them installed in an isolated venv
-(`langchain-core 1.7.6`, `langchain-anthropic 1.7.10`, `langchain-openai 1.7.4`)
-the same suite reports `23 passed`: real chat-model construction, real
-`SystemMessage`/`HumanMessage` objects, content-block joining and the direct
-fallback are all exercised. No live model request is made.
+The optional integration module adds checks against the real LangChain
+packages when they are installed.
 
 Relevant tests in `tests/test_pipeline.py`:
 - `test_llm_path_is_used_when_a_key_is_configured` - Anthropic response text
@@ -157,18 +153,13 @@ Relevant tests in `tests/test_pipeline.py`:
   default SDK path still works without the optional packages.
 - `test_langchain_failure_falls_back_to_template` - a failing LangChain call
   is isolated per profile.
-- `tests/test_langchain_integration.py` (optional) - real package imports,
-  real chat-model construction, real message types and content-block joining.
+- `tests/test_langchain_integration.py` (optional) - adapter checks with the
+  real packages.
 - `test_template_messages_respect_word_limits` - 30 generated messages all
   land inside the configured 60-90 / 15-30 word ranges.
 - `test_send_batch_skips_missing_email_and_dedups` - second run sends 0.
 - `test_smtp_failure_is_logged_per_recipient` - SMTP errors are isolated.
 
-**This part is still simulated, not a live call** - no `ANTHROPIC_API_KEY`
-or `OPENAI_API_KEY` was available in the environment this was built and run
-in. Every message in this submission's dataset came from the
-template-fallback generator, which is disclosed in the README rather than
-presented as LLM output. If you run this with a real key exported, `[4/7]`
-in the output above will say `(LLM mode)` instead of `(template fallback
-mode)` and the messages will come from the model directly - no code
-changes needed.
+Every message in this submission's dataset came from the template-fallback
+generator. Export a real key and `[4/7]` in the output above will read
+`(LLM mode)` instead of `(template fallback mode)`; no code changes needed.

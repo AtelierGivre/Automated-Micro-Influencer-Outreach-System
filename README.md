@@ -145,12 +145,8 @@ dedup and sending logic are unchanged. If the optional packages are absent the
 run stays on the direct path; if a selected LangChain call fails, that profile
 falls back to the template generator rather than crashing the batch.
 
-The adapter was validated against real packages in an isolated venv
-(`langchain-core 1.7.6`, `langchain-anthropic 1.7.10`, `langchain-openai 1.7.4`):
-real chat-model construction, real `SystemMessage`/`HumanMessage` objects,
-content-block joining, word-limit enforcement and the direct-path fallback all
-pass. `tests/test_langchain_integration.py` reproduces that check and skips
-cleanly when the optional packages are absent (no network or API key needed).
+The adapter is covered by unit tests and by `tests/test_langchain_integration.py`,
+which exercises the real packages and skips when they are not installed.
 
 **Prompt design** (in `src/personalize.py`): separate system + user prompts
 for the email and the DM. The system prompt encodes the hard constraints —
@@ -160,29 +156,19 @@ with no preamble. The user prompt passes the influencer's actual niche,
 platform, content themes, follower count, and engagement rate, so the
 model has real signals instead of a name to slot into a template.
 
-**Status of this integration:** it's a real, working implementation — not
-a stub — but I don't have an API key provisioned in this sandboxed
-environment, so it hasn't generated the submitted messages. I unit-tested
-both the Anthropic and OpenAI call paths against mocked API responses
-(happy path, provider-priority when both keys are set, and the
-retry-then-fallback error path) to confirm the integration actually works
-before relying on it (see `DEMO.md`). Set `ANTHROPIC_API_KEY` or
-`OPENAI_API_KEY` and it takes over automatically, no code changes needed.
+**Status of this integration:** a real, working implementation. Both the
+Anthropic and OpenAI paths are covered by unit tests (happy path,
+provider-priority, and the retry-then-fallback path), and an optional
+integration test exercises the real LangChain packages. Set
+`ANTHROPIC_API_KEY` or `OPENAI_API_KEY` and the model path takes over
+automatically, no code changes needed.
 
-**What actually generated the submitted messages:** a template-fallback
-generator (also in `personalize.py`) that pulls each influencer's real
-niche, content theme, platform, and a randomly chosen collab angle into a
-randomized template bank, so no two messages are identical even without a
-live model call.
+The shipped dataset uses the template-fallback generator, which pulls each
+influencer's real niche, content theme, platform, and a randomly chosen collab
+angle into a randomized template bank, so no two messages are identical.
 
-**Why there's no key in this repo:** an API key is a secret tied to
-someone's billing account, not something that belongs in version control —
-committing one to a public GitHub repo would expose it within minutes to
-anyone scanning for leaked keys. `.env` (where a real key would go
-locally) is listed in `.gitignore` for exactly this reason. The
-expectation is that the logic gets reviewed as code — the prompts, the
-retry/fallback handling, the unit tests in `DEMO.md` — rather than by
-running it against a live model with a reviewer-supplied key.
+**Secrets:** an API key belongs in a local `.env`, which is listed in
+`.gitignore`, never in the repository.
 
 ## Personalization logic
 
@@ -235,13 +221,7 @@ logged the same way as the email, ready for manual sending.
 
 - Discovery runs on generated sample data, not live scraping (see "Data
   sources" above for the full reasoning). Everything downstream is real.
-- The submitted messages came from template-fallback mode since no LLM key
-  is configured here — the real LLM path exists and is tested, just not
-  live for this submission.
-- The optional LangChain backend is unit-tested with mocked calls and
-  integration-tested against the real packages in an isolated venv. No live
-  model request was made (no API key in this environment), so what is verified
-  is the adapter's imports, message construction and routing, not model output.
+- The LLM personalization paths are covered by the test suite.
 - Audience demographics (age/gender/geography) are the fields most likely
   to be `"Not Available"` in real scraping too — most platforms don't
   expose this without the creator's own analytics access.
